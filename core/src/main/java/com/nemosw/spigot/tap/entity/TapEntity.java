@@ -1,10 +1,16 @@
 package com.nemosw.spigot.tap.entity;
 
+import com.nemosw.spigot.tap.Tap;
 import com.nemosw.spigot.tap.math.BoundingBox;
 import org.bukkit.entity.Entity;
 
 public interface TapEntity
 {
+
+    static TapEntity wrapEntity(Entity entity)
+    {
+        return Tap.ENTITY.wrapEntity(entity);
+    }
 
     Entity getBukkitEntity();
 
