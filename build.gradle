@@ -35,12 +35,12 @@ subprojects {
     }
 
     task sourcesJar(type: Jar) {
-        classifier = 'sources'
+        archiveClassifier = 'sources'
         from sourceSets.main.allJava
     }
 
     task javadocJar(type: Jar) {
-        classifier = 'javadoc'
+        archiveClassifier = 'javadoc'
         from javadoc
     }
 
@@ -102,7 +102,7 @@ project(':core') {
 }
 
 shadowJar {
-    classifier = 'universal'
+    archiveClassifier = 'universal'
 
     dependencies {
         exclude(dependency('com.google.code.gson:gson'))
