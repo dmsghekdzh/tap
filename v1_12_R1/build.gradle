@@ -1,3 +1,15 @@
 dependencies {
     compileOnly 'org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT'
 }
+
+compileJava {
+    onlyIf {
+        gradle.taskGraph.hasTask(":spigotJar") || parent.hasProperty("compileNMS")
+    }
+}
+
+publishToMavenLocal {
+    onlyIf {
+        parent.hasProperty("compileNMS")
+    }
+}
