@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 
-@SuppressWarnings("ALL")
 public class DebugBlock extends DebugProcess
 {
     @Override
@@ -24,6 +23,7 @@ public class DebugBlock extends DebugProcess
     {
         registerListener(new Listener()
         {
+            @SuppressWarnings("deprecation")
             @EventHandler
             public void onPlayerInteract(PlayerInteractEvent event)
             {
