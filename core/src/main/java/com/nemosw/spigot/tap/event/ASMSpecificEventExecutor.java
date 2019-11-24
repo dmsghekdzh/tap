@@ -14,24 +14,24 @@ import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
-public final class ASMEntityEventExecutor
+public final class ASMSpecificEventExecutor
 {
 
     private static final DefaultExtractor[] DEFAULT_EXTRACTORS;
 
     private static final String EXECUTOR_CONST_DESC = "(L" + Type.getInternalName(EntityExtractor.class) + ";)V";
 
-    private static final String SUPER_NAME = Type.getInternalName(EntityEventExecutor.class);
+    private static final String SUPER_NAME = Type.getInternalName(SpecificEventExecutor.class);
 
-    private static final String SUPER_CONST_DESC = Type.getConstructorDescriptor(EntityEventExecutor.class.getConstructors()[0]);
+    private static final String SUPER_CONST_DESC = Type.getConstructorDescriptor(SpecificEventExecutor.class.getConstructors()[0]);
 
     private static final String EXECUTE_DESC;
 
-    private static final String PRIORITY_NAME = Type.getInternalName(EntityEventPriority.class);
+    private static final String PRIORITY_NAME = Type.getInternalName(SpecificEventPriority.class);
 
     private static final String PRIORITY_SIGN = 'L' + PRIORITY_NAME + ';';
 
-    private static final Map<Method, EntityEventExecutor> CACHE = new HashMap<>();
+    private static final Map<Method, SpecificEventExecutor> CACHE = new HashMap<>();
 
     private static final Map<Class<?>, EntityExtractor<?>> EXTRACTORS_BY_CLASS = new HashMap<>();
 
@@ -55,7 +55,7 @@ public final class ASMEntityEventExecutor
     {
         try
         {
-            EXECUTE_DESC = Type.getMethodDescriptor(EntityEventExecutor.class.getMethod("execute", EntityListener.class, Event.class));
+            EXECUTE_DESC = Type.getMethodDescriptor(SpecificEventExecutor.class.getMethod("execute", SpecificListener.class, Event.class));
 
         }
         catch (Exception e)
@@ -87,7 +87,7 @@ public final class ASMEntityEventExecutor
     }
 
     @SuppressWarnings("unchecked")
-    static EntityEventExecutor[] createExecutors(Class<? extends EntityListener> clazz)
+    static SpecificEventExecutor[] createExecutors(Class<? extends SpecificListener> clazz)
     {
         int mod = clazz.getModifiers();
 
@@ -101,10 +101,10 @@ public final class ASMEntityEventExecutor
             final Method method;
             final Class<?> handlerClass;
             final EntityExtractor<? extends Event> entityExtractor;
-            final EntityEventPriority priority;
+            final SpecificEventPriority priority;
             final boolean ignoreCancelled;
 
-            ListenerMaterial(Method method, Class<?> handlerClass, EntityExtractor<? extends Event> entityExtractor, EntityEventPriority priority, boolean ignoreCancelled)
+            ListenerMaterial(Method method, Class<?> handlerClass, EntityExtractor<? extends Event> entityExtractor, SpecificEventPriority priority, boolean ignoreCancelled)
             {
                 this.method = method;
                 this.handlerClass = handlerClass;
@@ -124,9 +124,9 @@ public final class ASMEntityEventExecutor
                 try
                 {
                     Method real = superClass.getDeclaredMethod(method.getName(), method.getParameterTypes());
-                    EntityEventHandler entityEventHandler = real.getAnnotation(EntityEventHandler.class);
+                    SpecificEventHandler specificEventHandler = real.getAnnotation(SpecificEventHandler.class);
 
-                    if (entityEventHandler != null)
+                    if (specificEventHandler != null)
                     {
                         Class<?>[] parameterTypes = real.getParameterTypes();
 
@@ -152,7 +152,7 @@ public final class ASMEntityEventExecutor
                             throw new IllegalArgumentException('\'' + eventClass.getName() + "' has no HandlerList: " + method);
                         }
 
-                        Class<?> extractorClass = entityEventHandler.extractor();
+                        Class<?> extractorClass = specificEventHandler.extractor();
 
                         if (extractorClass == EntityExtractor.class)
                         {
@@ -178,7 +178,7 @@ public final class ASMEntityEventExecutor
                             EXTRACTORS_BY_CLASS.put(extractorClass, entityExtractor);
                         }
 
-                        materials.add(new ListenerMaterial(method, handlerClass, entityExtractor, entityEventHandler.priority(), entityEventHandler.ignoreCancelled()));
+                        materials.add(new ListenerMaterial(method, handlerClass, entityExtractor, specificEventHandler.priority(), specificEventHandler.ignoreCancelled()));
                     }
                 }
                 catch (NoSuchMethodException | SecurityException ignored)
@@ -188,7 +188,7 @@ public final class ASMEntityEventExecutor
         }
 
         int size = materials.size();
-        EntityEventExecutor[] executors = new EntityEventExecutor[size];
+        SpecificEventExecutor[] executors = new SpecificEventExecutor[size];
 
         for (int i = 0; i < size; i++)
         {
@@ -200,7 +200,7 @@ public final class ASMEntityEventExecutor
         return executors;
     }
 
-    private static EntityEventExecutor createListener(Method method, Class<?> handlerClass, EntityExtractor<?> entityExtractor, EntityEventPriority priority, boolean ignoreCancelled)
+    private static SpecificEventExecutor createListener(Method method, Class<?> handlerClass, EntityExtractor<?> entityExtractor, SpecificEventPriority priority, boolean ignoreCancelled)
     {
         if (CACHE.containsKey(method))
             return CACHE.get(method);
@@ -209,7 +209,7 @@ public final class ASMEntityEventExecutor
         {
             Class<?> declaredClass = method.getDeclaringClass();
             Class<?> eventClass = method.getParameterTypes()[0];
-            String name = EntityEventExecutor.class.getName() + "_" + EXECUTOR_IDs++;
+            String name = SpecificEventExecutor.class.getName() + "_" + EXECUTOR_IDs++;
             String desc = name.replace('.', '/');
             String instType = Type.getInternalName(declaredClass);
             String eventType = Type.getInternalName(eventClass);
@@ -248,7 +248,7 @@ public final class ASMEntityEventExecutor
                 mv.visitEnd();
             }
 
-            EntityEventExecutor executor = (EntityEventExecutor) ClassDefiner.defineClass(name, cw.toByteArray(), declaredClass.getClassLoader()).getConstructor(EntityExtractor.class)
+            SpecificEventExecutor executor = (SpecificEventExecutor) ClassDefiner.defineClass(name, cw.toByteArray(), declaredClass.getClassLoader()).getConstructor(EntityExtractor.class)
                     .newInstance(entityExtractor);
 
             CACHE.put(method, executor);

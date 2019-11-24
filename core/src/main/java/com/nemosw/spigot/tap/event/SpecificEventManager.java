@@ -11,35 +11,38 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
-public final class EntityEventManager
+public final class SpecificEventManager
 {
 
     private static final EventListenerExecutor EXECUTOR = new EventListenerExecutor();
 
-    private final Plugin plugin;
+
+    static final SpecificEventKey EVENT_KEY = new SpecificEventKey();
 
     private final Map<Class<? extends Event>, EventListener> registeredListeners = new HashMap<>();
+    private final Map<Class<? extends SpecificListener>, SpecificEventExecutor[]> registeredExecutors = new HashMap<>();
 
-    private final Map<Class<? extends EntityListener>, EntityEventExecutor[]> registeredExecutors = new HashMap<>();
+    private final Map<Entity, SpecificEntity> entities = new WeakHashMap<>();
+    private Plugin plugin;
 
-    private final Map<Entity, EventEntity> entities = new WeakHashMap<>();
-
-    public EntityEventManager(Plugin plugin)
+    public void registerEvents(Plugin plugin)
     {
-        this.plugin = plugin;
+        if (this.plugin != null)
+            throw new IllegalArgumentException("Already registered SpecificEventManager");
 
+        this.plugin = plugin;
         ASMEventExecutor.registerEvents(new EntityEventListener(this), plugin);
     }
 
-    private EntityEventExecutor[] createExecutor(Class<? extends EntityListener> clazz)
+    private SpecificEventExecutor[] createExecutor(Class<? extends SpecificListener> clazz)
     {
-        EntityEventExecutor[] executors = this.registeredExecutors.get(clazz);
+        SpecificEventExecutor[] executors = this.registeredExecutors.get(clazz);
 
         if (executors == null)
         {
-            this.registeredExecutors.put(clazz, executors = ASMEntityEventExecutor.createExecutors(clazz));
+            this.registeredExecutors.put(clazz, executors = ASMSpecificEventExecutor.createExecutors(clazz));
 
-            for (EntityEventExecutor executor : executors)
+            for (SpecificEventExecutor executor : executors)
             {
                 Class<? extends Event> handlerClass = executor.handlerClass;
                 EventListener listener = this.registeredListeners.get(handlerClass);
@@ -59,42 +62,34 @@ public final class EntityEventManager
         return executors;
     }
 
-    public void registerListener(Class<? extends EntityListener> clazz)
+    public void registerListener(Class<? extends SpecificListener> clazz)
     {
         createExecutor(clazz);
     }
 
-    public RegisteredEntityListener registerEvents(Entity entity, EntityListener listener)
+    public RegisteredSpecificListener registerEvents(Entity entity, SpecificListener listener)
     {
         if (entity == null)
             throw new NullPointerException("Entity cannot be null");
         if (listener == null)
             throw new NullPointerException("Listener cannot be null");
 
-        EntityEventExecutor[] executors = createExecutor(listener.getClass());
+        SpecificEventExecutor[] executors = createExecutor(listener.getClass());
 
-        EventEntity eventEntity = this.entities.get(entity);
+        SpecificEntity specificEntity = this.entities.get(entity);
 
-        if (eventEntity == null)
-            this.entities.put(entity, eventEntity = new EventEntity());
+        if (specificEntity == null)
+            this.entities.put(entity, specificEntity = new SpecificEntity());
 
-        return eventEntity.registerEvents(listener, executors);
+        return specificEntity.registerEvents(listener, executors);
     }
 
-    void handleEvent(Entity entity, EntityEventKey key, Event event)
+    void handleEvent(Entity entity, SpecificEventKey key, Event event)
     {
-        EventEntity eventEntity = this.entities.get(entity);
+        SpecificEntity specificEntity = this.entities.get(entity);
 
-        if (eventEntity != null)
-            eventEntity.handleEvent(key, event);
-    }
-
-    void removeEntity(LivingEntity entity)
-    {
-        EventEntity eventEntity = this.entities.remove(entity);
-
-        if (eventEntity != null)
-            eventEntity.clear();
+        if (specificEntity != null)
+            specificEntity.handleEvent(key, event);
     }
 
     public void unregisterAll()
@@ -107,7 +102,13 @@ public final class EntityEventManager
         this.entities.clear();
     }
 
-    static final EntityEventKey EVENT_KEY = new EntityEventKey();
+    void removeEntity(LivingEntity entity)
+    {
+        SpecificEntity specificEntity = this.entities.remove(entity);
+
+        if (specificEntity != null)
+            specificEntity.clear();
+    }
 
     private static class EventListenerExecutor implements EventExecutor
     {

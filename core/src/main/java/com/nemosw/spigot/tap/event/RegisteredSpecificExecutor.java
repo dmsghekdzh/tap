@@ -4,16 +4,16 @@ import com.nemosw.mox.collections.Node;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
-final class RegisteredEntityExecutor
+final class RegisteredSpecificExecutor
 {
 
-    EntityListener listener;
+    SpecificListener listener;
 
-    EntityEventExecutor executor;
+    SpecificEventExecutor executor;
 
-    Node<RegisteredEntityExecutor> node;
+    Node<RegisteredSpecificExecutor> node;
 
-    RegisteredEntityExecutor(EntityListener listener, EntityEventExecutor executor)
+    RegisteredSpecificExecutor(SpecificListener listener, SpecificEventExecutor executor)
     {
         this.listener = listener;
         this.executor = executor;

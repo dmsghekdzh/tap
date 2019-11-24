@@ -25,7 +25,7 @@ import java.util.Map;
 
 public abstract class EntityExtractor<T extends Event>
 {
-    private final Map<Class<?>, EntityEventKey> eventKeyByEventClass = new HashMap<>();
+    private final Map<Class<?>, SpecificEventKey> eventKeyByEventClass = new HashMap<>();
 
     final Class<? extends Event> eventClass;
 
@@ -35,12 +35,12 @@ public abstract class EntityExtractor<T extends Event>
         eventClass = (Class<? extends Event>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
-    EntityEventKey createEventKey(Class<?> eventClass)
+    SpecificEventKey createEventKey(Class<?> eventClass)
     {
-        EntityEventKey eventKey = this.eventKeyByEventClass.get(eventClass);
+        SpecificEventKey eventKey = this.eventKeyByEventClass.get(eventClass);
 
         if (eventKey == null)
-            this.eventKeyByEventClass.put(eventClass, eventKey = new EntityEventKey().set(eventClass, this));
+            this.eventKeyByEventClass.put(eventClass, eventKey = new SpecificEventKey().set(eventClass, this));
 
         return eventKey;
     }

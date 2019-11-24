@@ -1,6 +1,6 @@
 package com.nemosw.spigot.tap.event;
 
-public interface EntityListener
+public interface SpecificListener
 {
 
 }

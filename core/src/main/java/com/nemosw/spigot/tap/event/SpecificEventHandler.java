@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EntityEventHandler
+public @interface SpecificEventHandler
 {
 
     Class<?> extractor() default EntityExtractor.class;
 
-    EntityEventPriority priority() default EntityEventPriority.NORMAL;
+    SpecificEventPriority priority() default SpecificEventPriority.NORMAL;
 
     boolean ignoreCancelled() default false;
 

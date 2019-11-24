@@ -1,6 +1,6 @@
 package com.nemosw.spigot.tap.event;
 
-public enum EntityEventPriority
+public enum SpecificEventPriority
 {
     LOWEST,
     LOW,

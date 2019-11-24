@@ -11,9 +11,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public final class EntityEventListener implements Listener
 {
 
-    private final EntityEventManager manager;
+    private final SpecificEventManager manager;
 
-    EntityEventListener(EntityEventManager manager)
+    EntityEventListener(SpecificEventManager manager)
     {
         this.manager = manager;
     }

@@ -6,19 +6,19 @@ import com.nemosw.mox.collections.Node;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
-final class EventEntityHandler implements EventNodeList.NodeListener<RegisteredEntityExecutor>
+final class EventEntityHandler implements EventNodeList.NodeListener<RegisteredSpecificExecutor>
 {
 
-    private final EnumMap<EntityEventPriority, EventNodeList<RegisteredEntityExecutor>> executorsByPriority = new EnumMap<>(EntityEventPriority.class);
+    private final EnumMap<SpecificEventPriority, EventNodeList<RegisteredSpecificExecutor>> executorsByPriority = new EnumMap<>(SpecificEventPriority.class);
 
-    private RegisteredEntityExecutor[] executors;
+    private RegisteredSpecificExecutor[] executors;
 
-    void registerExecutor(RegisteredEntityExecutor registered)
+    void registerExecutor(RegisteredSpecificExecutor registered)
     {
-        EnumMap<EntityEventPriority, EventNodeList<RegisteredEntityExecutor>> executorsByPriority = this.executorsByPriority;
-        EntityEventExecutor executor = registered.executor;
-        EntityEventPriority priority = executor.priority;
-        EventNodeList<RegisteredEntityExecutor> registeredExecutors = executorsByPriority.get(priority);
+        EnumMap<SpecificEventPriority, EventNodeList<RegisteredSpecificExecutor>> executorsByPriority = this.executorsByPriority;
+        SpecificEventExecutor executor = registered.executor;
+        SpecificEventPriority priority = executor.priority;
+        EventNodeList<RegisteredSpecificExecutor> registeredExecutors = executorsByPriority.get(priority);
 
         if (registeredExecutors == null)
         {
@@ -31,23 +31,23 @@ final class EventEntityHandler implements EventNodeList.NodeListener<RegisteredE
     }
 
     @Override
-    public void onEvent(EventNodeList.EventType type, Node<RegisteredEntityExecutor> node, RegisteredEntityExecutor item)
+    public void onEvent(EventNodeList.EventType type, Node<RegisteredSpecificExecutor> node, RegisteredSpecificExecutor item)
     {
         this.executors = null;
     }
 
-    public RegisteredEntityExecutor[] getExecutors()
+    public RegisteredSpecificExecutor[] getExecutors()
     {
-        RegisteredEntityExecutor[] executors = this.executors;
+        RegisteredSpecificExecutor[] executors = this.executors;
 
         if (executors == null)
         {
-            ArrayList<RegisteredEntityExecutor> list = new ArrayList<>();
+            ArrayList<RegisteredSpecificExecutor> list = new ArrayList<>();
 
-            for (EventNodeList<RegisteredEntityExecutor> executorList : this.executorsByPriority.values())
+            for (EventNodeList<RegisteredSpecificExecutor> executorList : this.executorsByPriority.values())
                 list.addAll(executorList);
 
-            this.executors = executors = list.toArray(new RegisteredEntityExecutor[0]);
+            this.executors = executors = list.toArray(new RegisteredSpecificExecutor[0]);
         }
 
         return executors;

@@ -1,6 +1,6 @@
 package com.nemosw.spigot.tap.event;
 
-final class EntityEventKey
+final class SpecificEventKey
 {
 
     private Class<?> eventClass;
@@ -9,7 +9,7 @@ final class EntityEventKey
 
     private int hashCode;
 
-    EntityEventKey set(Class<?> eventClass, EntityExtractor<?> extractor)
+    SpecificEventKey set(Class<?> eventClass, EntityExtractor<?> extractor)
     {
         this.eventClass = eventClass;
         this.extractor = extractor;
@@ -27,9 +27,9 @@ final class EntityEventKey
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof EntityEventKey)
+        if (obj instanceof SpecificEventKey)
         {
-            EntityEventKey other = (EntityEventKey) obj;
+            SpecificEventKey other = (SpecificEventKey) obj;
 
             return this.eventClass == other.eventClass && this.extractor == other.extractor;
         }

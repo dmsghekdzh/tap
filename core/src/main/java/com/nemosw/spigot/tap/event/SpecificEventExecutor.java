@@ -2,17 +2,17 @@ package com.nemosw.spigot.tap.event;
 
 import org.bukkit.event.Event;
 
-public abstract class EntityEventExecutor
+public abstract class SpecificEventExecutor
 {
     final Class<? extends Event> eventClass;
     final Class<? extends Event> handlerClass;
     final EntityExtractor<? extends Event> entityExtractor;
-    final EntityEventKey eventKey;
-    final EntityEventPriority priority;
+    final SpecificEventKey eventKey;
+    final SpecificEventPriority priority;
     final boolean ignoreCancelled;
 
-    public EntityEventExecutor(Class<? extends Event> eventClass, Class<? extends Event> handlerClass, EntityExtractor<? extends Event> entityExtractor,
-                               EntityEventPriority priority, boolean ignoreCancelled
+    public SpecificEventExecutor(Class<? extends Event> eventClass, Class<? extends Event> handlerClass, EntityExtractor<? extends Event> entityExtractor,
+                                 SpecificEventPriority priority, boolean ignoreCancelled
     )
     {
         this.eventClass = eventClass;
@@ -33,5 +33,5 @@ public abstract class EntityEventExecutor
         return this.handlerClass;
     }
 
-    public abstract void execute(EntityListener listener, Event event);
+    public abstract void execute(SpecificListener listener, Event event);
 }
