@@ -1,15 +1,15 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.event.specific;
 
 final class SpecificEventKey
 {
 
     private Class<?> eventClass;
 
-    private EntityExtractor<?> extractor;
+    private SpecificExtractor<?> extractor;
 
     private int hashCode;
 
-    SpecificEventKey set(Class<?> eventClass, EntityExtractor<?> extractor)
+    SpecificEventKey set(Class<?> eventClass, SpecificExtractor<?> extractor)
     {
         this.eventClass = eventClass;
         this.extractor = extractor;

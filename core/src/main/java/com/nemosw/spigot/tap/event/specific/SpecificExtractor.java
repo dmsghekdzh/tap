@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.event.specific;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
@@ -23,14 +23,14 @@ import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class EntityExtractor<T extends Event>
+public abstract class SpecificExtractor<T extends Event>
 {
     private final Map<Class<?>, SpecificEventKey> eventKeyByEventClass = new HashMap<>();
 
     final Class<? extends Event> eventClass;
 
     @SuppressWarnings("unchecked")
-    public EntityExtractor()
+    public SpecificExtractor()
     {
         eventClass = (Class<? extends Event>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
@@ -47,7 +47,7 @@ public abstract class EntityExtractor<T extends Event>
 
     public abstract Entity getEntity(T event);
 
-    static final class BlockBreakEventExtractor extends EntityExtractor<BlockBreakEvent>
+    static final class BlockBreakEventExtractor extends SpecificExtractor<BlockBreakEvent>
     {
         public Entity getEntity(BlockBreakEvent event)
         {
@@ -55,7 +55,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class BlockDamageEventExtractor extends EntityExtractor<BlockDamageEvent>
+    static final class BlockDamageEventExtractor extends SpecificExtractor<BlockDamageEvent>
     {
         @Override
         public Entity getEntity(BlockDamageEvent event)
@@ -64,7 +64,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class BlockIgniteEventExtractor extends EntityExtractor<BlockIgniteEvent>
+    static final class BlockIgniteEventExtractor extends SpecificExtractor<BlockIgniteEvent>
     {
         public Entity getEntity(BlockIgniteEvent event)
         {
@@ -72,7 +72,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class BlockPlaceEventExtractor extends EntityExtractor<BlockPlaceEvent>
+    static final class BlockPlaceEventExtractor extends SpecificExtractor<BlockPlaceEvent>
     {
         @Override
         public Entity getEntity(BlockPlaceEvent event)
@@ -81,7 +81,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class SignChangeEventExtractor extends EntityExtractor<SignChangeEvent>
+    static final class SignChangeEventExtractor extends SpecificExtractor<SignChangeEvent>
     {
         @Override
         public Entity getEntity(SignChangeEvent event)
@@ -90,7 +90,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class EnchantItemEventExtractor extends EntityExtractor<EnchantItemEvent>
+    static final class EnchantItemEventExtractor extends SpecificExtractor<EnchantItemEvent>
     {
         @Override
         public Entity getEntity(EnchantItemEvent event)
@@ -99,7 +99,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class PrepareItemEnchantEventExtractor extends EntityExtractor<PrepareItemEnchantEvent>
+    static final class PrepareItemEnchantEventExtractor extends SpecificExtractor<PrepareItemEnchantEvent>
     {
         @Override
         public Entity getEntity(PrepareItemEnchantEvent event)
@@ -108,7 +108,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class EntityEventExtractor extends EntityExtractor<EntityEvent>
+    static final class SpecificEventExtractor extends SpecificExtractor<EntityEvent>
     {
         public Entity getEntity(EntityEvent event)
         {
@@ -116,7 +116,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class HangingBreakByEntityEventExtractor extends EntityExtractor<HangingBreakByEntityEvent>
+    static final class HangingBreakBySpecificEventExtractor extends SpecificExtractor<HangingBreakByEntityEvent>
     {
         public Entity getEntity(HangingBreakByEntityEvent event)
         {
@@ -124,7 +124,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class HangingPlaceEventExtractor extends EntityExtractor<HangingPlaceEvent>
+    static final class HangingPlaceEventExtractor extends SpecificExtractor<HangingPlaceEvent>
     {
         @Override
         public Entity getEntity(HangingPlaceEvent event)
@@ -133,7 +133,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class FurnaceExtractEventExtractor extends EntityExtractor<FurnaceExtractEvent>
+    static final class FurnaceExtractEventExtractor extends SpecificExtractor<FurnaceExtractEvent>
     {
         @Override
         public Entity getEntity(FurnaceExtractEvent event)
@@ -142,7 +142,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class InventoryCloseEventExtractor extends EntityExtractor<InventoryCloseEvent>
+    static final class InventoryCloseEventExtractor extends SpecificExtractor<InventoryCloseEvent>
     {
         @Override
         public Entity getEntity(InventoryCloseEvent event)
@@ -151,7 +151,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class InventoryInteractEventExtractor extends EntityExtractor<InventoryInteractEvent>
+    static final class InventoryInteractEventExtractor extends SpecificExtractor<InventoryInteractEvent>
     {
         @Override
         public Entity getEntity(InventoryInteractEvent event)
@@ -160,7 +160,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class InventoryOpenEventExtractor extends EntityExtractor<InventoryOpenEvent>
+    static final class InventoryOpenEventExtractor extends SpecificExtractor<InventoryOpenEvent>
     {
         @Override
         public Entity getEntity(InventoryOpenEvent event)
@@ -169,7 +169,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class PlayerEventExtractor extends EntityExtractor<PlayerEvent>
+    static final class PlayerEventExtractor extends SpecificExtractor<PlayerEvent>
     {
         @Override
         public Entity getEntity(PlayerEvent event)
@@ -178,7 +178,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    static final class VehicleEventExtractor extends EntityExtractor<VehicleEvent>
+    static final class VehicleEventExtractor extends SpecificExtractor<VehicleEvent>
     {
         @Override
         public Entity getEntity(VehicleEvent event)
@@ -187,7 +187,7 @@ public abstract class EntityExtractor<T extends Event>
         }
     }
 
-    public static final class Damager extends EntityExtractor<EntityDamageByEntityEvent>
+    public static final class Damager extends SpecificExtractor<EntityDamageByEntityEvent>
     {
         @Override
         public Entity getEntity(EntityDamageByEntityEvent event)
@@ -198,7 +198,7 @@ public abstract class EntityExtractor<T extends Event>
 
     public static final class EntityDamageByEntity
     {
-        public static final class Shooter extends EntityExtractor<EntityDamageByEntityEvent>
+        public static final class Shooter extends SpecificExtractor<EntityDamageByEntityEvent>
         {
             @Override
             public Entity getEntity(EntityDamageByEntityEvent event)
@@ -220,7 +220,7 @@ public abstract class EntityExtractor<T extends Event>
 
     public static final class ProjectileHit
     {
-        public static final class Shooter extends EntityExtractor<ProjectileHitEvent>
+        public static final class Shooter extends SpecificExtractor<ProjectileHitEvent>
         {
             @Override
             public Entity getEntity(ProjectileHitEvent event)

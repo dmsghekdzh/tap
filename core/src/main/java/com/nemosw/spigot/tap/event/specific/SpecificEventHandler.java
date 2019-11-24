@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.event.specific;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface SpecificEventHandler
 {
 
-    Class<?> extractor() default EntityExtractor.class;
+    Class<?> extractor() default SpecificExtractor.class;
 
     SpecificEventPriority priority() default SpecificEventPriority.NORMAL;
 

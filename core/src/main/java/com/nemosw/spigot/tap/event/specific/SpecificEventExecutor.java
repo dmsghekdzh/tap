@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.event.specific;
 
 import org.bukkit.event.Event;
 
@@ -6,19 +6,19 @@ public abstract class SpecificEventExecutor
 {
     final Class<? extends Event> eventClass;
     final Class<? extends Event> handlerClass;
-    final EntityExtractor<? extends Event> entityExtractor;
+    final SpecificExtractor<? extends Event> specificExtractor;
     final SpecificEventKey eventKey;
     final SpecificEventPriority priority;
     final boolean ignoreCancelled;
 
-    public SpecificEventExecutor(Class<? extends Event> eventClass, Class<? extends Event> handlerClass, EntityExtractor<? extends Event> entityExtractor,
+    public SpecificEventExecutor(Class<? extends Event> eventClass, Class<? extends Event> handlerClass, SpecificExtractor<? extends Event> specificExtractor,
                                  SpecificEventPriority priority, boolean ignoreCancelled
     )
     {
         this.eventClass = eventClass;
         this.handlerClass = handlerClass;
-        this.entityExtractor = entityExtractor;
-        this.eventKey = entityExtractor.createEventKey(eventClass);
+        this.specificExtractor = specificExtractor;
+        this.eventKey = specificExtractor.createEventKey(eventClass);
         this.priority = priority;
         this.ignoreCancelled = ignoreCancelled;
     }

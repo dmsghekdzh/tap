@@ -1,5 +1,6 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.event.specific;
 
+import com.nemosw.spigot.tap.event.ASMEventExecutor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
@@ -20,6 +21,7 @@ public final class SpecificEventManager
     static final SpecificEventKey EVENT_KEY = new SpecificEventKey();
 
     private final Map<Class<? extends Event>, EventListener> registeredListeners = new HashMap<>();
+
     private final Map<Class<? extends SpecificListener>, SpecificEventExecutor[]> registeredExecutors = new HashMap<>();
 
     private final Map<Entity, SpecificEntity> entities = new WeakHashMap<>();
@@ -55,7 +57,7 @@ public final class SpecificEventManager
                     this.registeredListeners.put(handlerClass, listener);
                 }
 
-                listener.addExtractor(executor.entityExtractor);
+                listener.addExtractor(executor.specificExtractor);
             }
         }
 
@@ -94,12 +96,12 @@ public final class SpecificEventManager
 
     public void unregisterAll()
     {
-        for (EventListener listener : this.registeredListeners.values())
+        for (EventListener listener : registeredListeners.values())
             HandlerList.unregisterAll(listener);
 
-        this.registeredListeners.clear();
-        this.registeredExecutors.clear();
-        this.entities.clear();
+        registeredListeners.clear();
+        registeredExecutors.clear();
+        entities.clear();
     }
 
     void removeEntity(LivingEntity entity)
@@ -121,12 +123,12 @@ public final class SpecificEventManager
 
     private class EventListener implements Listener
     {
-        private final Set<EntityExtractor<? extends Event>> entityExtractors = new LinkedHashSet<>();
-        private EntityExtractor<? extends Event>[] baked;
+        private final Set<SpecificExtractor<? extends Event>> specificExtractors = new LinkedHashSet<>();
+        private SpecificExtractor<? extends Event>[] baked;
 
-        public void addExtractor(EntityExtractor<? extends Event> extractor)
+        public void addExtractor(SpecificExtractor<? extends Event> extractor)
         {
-            if (this.entityExtractors.add(extractor))
+            if (this.specificExtractors.add(extractor))
                 this.baked = null;
         }
 
@@ -134,18 +136,18 @@ public final class SpecificEventManager
         public void onEvent(Event event)
         {
             if (this.baked == null)
-                this.baked = this.entityExtractors.toArray(new EntityExtractor[0]);
+                this.baked = this.specificExtractors.toArray(new SpecificExtractor[0]);
 
             Class<? extends Event> eventClass = event.getClass();
 
-            for (EntityExtractor entityExtractor : this.baked)
+            for (SpecificExtractor specificExtractor : this.baked)
             {
-                if (entityExtractor.eventClass.isAssignableFrom(eventClass))
+                if (specificExtractor.eventClass.isAssignableFrom(eventClass))
                 {
-                    Entity entity = entityExtractor.getEntity(event);
+                    Entity entity = specificExtractor.getEntity(event);
 
                     if (entity != null)
-                        handleEvent(entity, EVENT_KEY.set(eventClass, entityExtractor), event);
+                        handleEvent(entity, EVENT_KEY.set(eventClass, specificExtractor), event);
                 }
             }
         }

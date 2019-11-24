@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.event.specific;
 
 public enum SpecificEventPriority
 {

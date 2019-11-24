@@ -15,7 +15,7 @@ Sugar codes for spigot
 >> * Fast math
 >> * Mojang user profile
 >> * Fake scoreboard
->> * Entity specific events listener
+>> * Entity specificEntity events listener
 >> * Sub commands Module
 
 <br>

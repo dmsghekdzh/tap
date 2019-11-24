@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.event.specific;
 
 import com.nemosw.mox.collections.LinkedNodeList;
 import org.bukkit.event.Event;

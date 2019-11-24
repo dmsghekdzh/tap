@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.event.specific;
 
 import com.google.common.reflect.TypeToken;
 import com.nemosw.tools.asm.ClassDefiner;
@@ -19,7 +19,7 @@ public final class ASMSpecificEventExecutor
 
     private static final DefaultExtractor[] DEFAULT_EXTRACTORS;
 
-    private static final String EXECUTOR_CONST_DESC = "(L" + Type.getInternalName(EntityExtractor.class) + ";)V";
+    private static final String EXECUTOR_CONST_DESC = "(L" + Type.getInternalName(SpecificExtractor.class) + ";)V";
 
     private static final String SUPER_NAME = Type.getInternalName(SpecificEventExecutor.class);
 
@@ -33,7 +33,7 @@ public final class ASMSpecificEventExecutor
 
     private static final Map<Method, SpecificEventExecutor> CACHE = new HashMap<>();
 
-    private static final Map<Class<?>, EntityExtractor<?>> EXTRACTORS_BY_CLASS = new HashMap<>();
+    private static final Map<Class<?>, SpecificExtractor<?>> EXTRACTORS_BY_CLASS = new HashMap<>();
 
     private static int EXECUTOR_IDs;
 
@@ -63,12 +63,12 @@ public final class ASMSpecificEventExecutor
             throw new AssertionError(e);
         }
 
-        Class<?>[] classes = EntityExtractor.class.getDeclaredClasses();
+        Class<?>[] classes = SpecificExtractor.class.getDeclaredClasses();
         List<DefaultExtractor> defaultExtractors = new ArrayList<>(classes.length);
 
         for (Class<?> clazz : classes)
         {
-            if (EntityExtractor.class.isAssignableFrom(clazz) && !Modifier.isPublic(clazz.getModifiers()))
+            if (SpecificExtractor.class.isAssignableFrom(clazz) && !Modifier.isPublic(clazz.getModifiers()))
                 defaultExtractors.add(new DefaultExtractor(clazz));
         }
 
@@ -100,11 +100,11 @@ public final class ASMSpecificEventExecutor
         {
             final Method method;
             final Class<?> handlerClass;
-            final EntityExtractor<? extends Event> entityExtractor;
+            final SpecificExtractor<? extends Event> entityExtractor;
             final SpecificEventPriority priority;
             final boolean ignoreCancelled;
 
-            ListenerMaterial(Method method, Class<?> handlerClass, EntityExtractor<? extends Event> entityExtractor, SpecificEventPriority priority, boolean ignoreCancelled)
+            ListenerMaterial(Method method, Class<?> handlerClass, SpecificExtractor<? extends Event> entityExtractor, SpecificEventPriority priority, boolean ignoreCancelled)
             {
                 this.method = method;
                 this.handlerClass = handlerClass;
@@ -154,7 +154,7 @@ public final class ASMSpecificEventExecutor
 
                         Class<?> extractorClass = specificEventHandler.extractor();
 
-                        if (extractorClass == EntityExtractor.class)
+                        if (extractorClass == SpecificExtractor.class)
                         {
                             extractorClass = getDefaultExtractorClass(eventClass);
 
@@ -162,23 +162,23 @@ public final class ASMSpecificEventExecutor
                                 throw new NullPointerException("Not found default EntityExtractor for " + eventClass);
                         }
 
-                        EntityExtractor<? extends Event> entityExtractor = EXTRACTORS_BY_CLASS.get(extractorClass);
+                        SpecificExtractor<? extends Event> specificExtractor = EXTRACTORS_BY_CLASS.get(extractorClass);
 
-                        if (entityExtractor == null)
+                        if (specificExtractor == null)
                         {
                             try
                             {
-                                entityExtractor = (EntityExtractor<? extends Event>) extractorClass.newInstance();
+                                specificExtractor = (SpecificExtractor<? extends Event>) extractorClass.newInstance();
                             }
                             catch (Exception e)
                             {
                                 throw new AssertionError(e);
                             }
 
-                            EXTRACTORS_BY_CLASS.put(extractorClass, entityExtractor);
+                            EXTRACTORS_BY_CLASS.put(extractorClass, specificExtractor);
                         }
 
-                        materials.add(new ListenerMaterial(method, handlerClass, entityExtractor, specificEventHandler.priority(), specificEventHandler.ignoreCancelled()));
+                        materials.add(new ListenerMaterial(method, handlerClass, specificExtractor, specificEventHandler.priority(), specificEventHandler.ignoreCancelled()));
                     }
                 }
                 catch (NoSuchMethodException | SecurityException ignored)
@@ -200,7 +200,7 @@ public final class ASMSpecificEventExecutor
         return executors;
     }
 
-    private static SpecificEventExecutor createListener(Method method, Class<?> handlerClass, EntityExtractor<?> entityExtractor, SpecificEventPriority priority, boolean ignoreCancelled)
+    private static SpecificEventExecutor createListener(Method method, Class<?> handlerClass, SpecificExtractor<?> specificExtractor, SpecificEventPriority priority, boolean ignoreCancelled)
     {
         if (CACHE.containsKey(method))
             return CACHE.get(method);
@@ -248,8 +248,8 @@ public final class ASMSpecificEventExecutor
                 mv.visitEnd();
             }
 
-            SpecificEventExecutor executor = (SpecificEventExecutor) ClassDefiner.defineClass(name, cw.toByteArray(), declaredClass.getClassLoader()).getConstructor(EntityExtractor.class)
-                    .newInstance(entityExtractor);
+            SpecificEventExecutor executor = (SpecificEventExecutor) ClassDefiner.defineClass(name, cw.toByteArray(), declaredClass.getClassLoader()).getConstructor(SpecificExtractor.class)
+                    .newInstance(specificExtractor);
 
             CACHE.put(method, executor);
 
