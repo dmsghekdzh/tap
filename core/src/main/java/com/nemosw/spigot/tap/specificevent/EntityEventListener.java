@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.specificevent;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

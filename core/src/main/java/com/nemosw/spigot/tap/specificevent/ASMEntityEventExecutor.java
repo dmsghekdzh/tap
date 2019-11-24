@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.specificevent;
 
 import com.google.common.reflect.TypeToken;
 import com.nemosw.tools.asm.ClassDefiner;

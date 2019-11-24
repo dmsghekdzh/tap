@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.specificevent;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

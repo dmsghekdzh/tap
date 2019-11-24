@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.event;
+package com.nemosw.spigot.tap.specificevent;
 
 import com.nemosw.mox.collections.EventNodeList;
 import com.nemosw.mox.collections.Node;
