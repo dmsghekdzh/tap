@@ -6,7 +6,7 @@ import com.nemosw.mox.collections.Node;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
-final class EventEntityHandler implements EventNodeList.NodeListener<RegisteredSpecificExecutor>
+final class EventSpecificHandler implements EventNodeList.NodeListener<RegisteredSpecificExecutor>
 {
 
     private final EnumMap<SpecificEventPriority, EventNodeList<RegisteredSpecificExecutor>> executorsByPriority = new EnumMap<>(SpecificEventPriority.class);

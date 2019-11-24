@@ -40,7 +40,7 @@ public abstract class SpecificExtractor<T extends Event>
         SpecificEventKey eventKey = this.eventKeyByEventClass.get(eventClass);
 
         if (eventKey == null)
-            this.eventKeyByEventClass.put(eventClass, eventKey = new SpecificEventKey().set(eventClass, this));
+            this.eventKeyByEventClass.put(eventClass, eventKey = new SpecificEventKey(eventClass, this));
 
         return eventKey;
     }

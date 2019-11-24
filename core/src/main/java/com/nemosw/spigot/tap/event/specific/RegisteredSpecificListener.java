@@ -1,13 +1,9 @@
 package com.nemosw.spigot.tap.event.specific;
 
-import com.nemosw.mox.collections.Node;
-
 public final class RegisteredSpecificListener
 {
 
     RegisteredSpecificExecutor[] executors;
-
-    Node<RegisteredSpecificListener> node;
 
     RegisteredSpecificListener(RegisteredSpecificExecutor[] executors)
     {

@@ -3,19 +3,17 @@ package com.nemosw.spigot.tap.event.specific;
 final class SpecificEventKey
 {
 
-    private Class<?> eventClass;
+    private final Class<?> eventClass;
 
-    private SpecificExtractor<?> extractor;
+    private final SpecificExtractor<?> extractor;
 
     private int hashCode;
 
-    SpecificEventKey set(Class<?> eventClass, SpecificExtractor<?> extractor)
+    SpecificEventKey(Class<?> eventClass, SpecificExtractor<?> extractor)
     {
         this.eventClass = eventClass;
         this.extractor = extractor;
         this.hashCode = eventClass.hashCode() ^ extractor.hashCode();
-
-        return this;
     }
 
     @Override

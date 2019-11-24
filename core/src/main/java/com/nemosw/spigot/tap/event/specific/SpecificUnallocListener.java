@@ -8,12 +8,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public final class EntityEventListener implements Listener
+public final class SpecificUnallocListener implements Listener
 {
 
     private final SpecificEventManager manager;
 
-    EntityEventListener(SpecificEventManager manager)
+    SpecificUnallocListener(SpecificEventManager manager)
     {
         this.manager = manager;
     }
@@ -26,13 +26,13 @@ public final class EntityEventListener implements Listener
         if (entity instanceof Player)
             return;
 
-        this.manager.removeEntity(entity);
+        this.manager.unregisterEntity(entity);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        this.manager.removeEntity(event.getPlayer());
+        this.manager.unregisterEntity(event.getPlayer());
     }
 
 }

@@ -3,30 +3,33 @@ package com.nemosw.spigot.tap.event.specific;
 import com.nemosw.mox.collections.LinkedNodeList;
 import org.bukkit.event.Event;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 final class SpecificEntity
 {
 
-    private final LinkedNodeList<RegisteredSpecificListener> registeredListeners = new LinkedNodeList<>();
+    private final List<RegisteredSpecificListener> registeredListeners = new ArrayList<>();
 
-    private final HashMap<SpecificEventKey, EventEntityHandler> handlers = new HashMap<>();
+    private final Map<SpecificEventKey, EventSpecificHandler> handlers = new HashMap<>();
 
-    RegisteredSpecificListener registerEvents(SpecificListener listener, SpecificEventExecutor[] executors)
+    RegisteredSpecificListener registerEvents(SpecificListener listener, List<SpecificEventExecutor> executors)
     {
-        int length = executors.length;
-        RegisteredSpecificExecutor[] registereds = new RegisteredSpecificExecutor[length];
-        HashMap<SpecificEventKey, EventEntityHandler> handlers = this.handlers;
+        int size = executors.size();
+        RegisteredSpecificExecutor[] registereds = new RegisteredSpecificExecutor[size];
+        Map<SpecificEventKey, EventSpecificHandler> handlers = this.handlers;
 
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < size; i++)
         {
             SpecificEventExecutor executor = executors[i];
             RegisteredSpecificExecutor registered = new RegisteredSpecificExecutor(listener, executor);
             SpecificEventKey key = executor.eventKey;
-            EventEntityHandler handler = handlers.get(key);
+            EventSpecificHandler handler = handlers.get(key);
 
             if (handler == null)
-                handlers.put(key, handler = new EventEntityHandler());
+                handlers.put(key, handler = new EventSpecificHandler());
 
             handler.registerExecutor(registered);
 
@@ -41,7 +44,7 @@ final class SpecificEntity
 
     void handleEvent(SpecificEventKey key, Event event)
     {
-        EventEntityHandler handler = this.handlers.get(key);
+        EventSpecificHandler handler = this.handlers.get(key);
 
         if (handler != null)
         {
@@ -61,9 +64,9 @@ final class SpecificEntity
 
         registeredListeners.clear();
 
-        HashMap<SpecificEventKey, EventEntityHandler> handlers = this.handlers;
+        HashMap<SpecificEventKey, EventSpecificHandler> handlers = this.handlers;
 
-        for (EventEntityHandler handler : handlers.values())
+        for (EventSpecificHandler handler : handlers.values())
             handler.clear();
 
         handlers.clear();

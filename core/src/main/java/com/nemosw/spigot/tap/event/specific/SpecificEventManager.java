@@ -1,8 +1,8 @@
 package com.nemosw.spigot.tap.event.specific;
 
+import com.google.common.collect.ImmutableList;
 import com.nemosw.spigot.tap.event.ASMEventExecutor;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -15,53 +15,28 @@ import java.util.*;
 public final class SpecificEventManager
 {
 
-    private static final EventListenerExecutor EXECUTOR = new EventListenerExecutor();
-
-
-    static final SpecificEventKey EVENT_KEY = new SpecificEventKey();
+    private static final EventExecutor EXECUTOR = (listener, event) -> ((EventListener) listener).onEvent(event); // Bukkit event bridge
+    private final Plugin plugin;
+    private final EventPriority priority;
+    private final SpecificUnallocListener unallocListener;
+    private final Map<Class<? extends SpecificListener>, List<SpecificEventExecutor>> registeredExecutors = new HashMap<>();
 
     private final Map<Class<? extends Event>, EventListener> registeredListeners = new HashMap<>();
 
-    private final Map<Class<? extends SpecificListener>, SpecificEventExecutor[]> registeredExecutors = new HashMap<>();
-
-    private final Map<Entity, SpecificEntity> entities = new WeakHashMap<>();
-    private Plugin plugin;
-
-    public void registerEvents(Plugin plugin)
+    private SpecificEventManager(Plugin plugin, EventPriority priority)
     {
-        if (this.plugin != null)
-            throw new IllegalArgumentException("Already registered SpecificEventManager");
-
         this.plugin = plugin;
-        ASMEventExecutor.registerEvents(new EntityEventListener(this), plugin);
+        this.priority = priority;
+        this.unallocListener = new SpecificUnallocListener(this);
+
+        ASMEventExecutor.registerEvents(this.unallocListener, plugin);
     }
 
-    private SpecificEventExecutor[] createExecutor(Class<? extends SpecificListener> clazz)
+    private final Map<Entity, SpecificEntity> entities = new WeakHashMap<>();
+
+    public static SpecificEventManager create(Plugin plugin, EventPriority priority)
     {
-        SpecificEventExecutor[] executors = this.registeredExecutors.get(clazz);
-
-        if (executors == null)
-        {
-            this.registeredExecutors.put(clazz, executors = ASMSpecificEventExecutor.createExecutors(clazz));
-
-            for (SpecificEventExecutor executor : executors)
-            {
-                Class<? extends Event> handlerClass = executor.handlerClass;
-                EventListener listener = this.registeredListeners.get(handlerClass);
-
-                if (listener == null)
-                {
-                    listener = new EventListener();
-                    this.plugin.getServer().getPluginManager().registerEvent(handlerClass, listener, EventPriority.HIGH, EXECUTOR, this.plugin, false);
-                    this.plugin.getLogger().info("Entity listener registered: " + handlerClass.getName());
-                    this.registeredListeners.put(handlerClass, listener);
-                }
-
-                listener.addExtractor(executor.specificExtractor);
-            }
-        }
-
-        return executors;
+        return new SpecificEventManager(plugin, priority);
     }
 
     public void registerListener(Class<? extends SpecificListener> clazz)
@@ -76,7 +51,7 @@ public final class SpecificEventManager
         if (listener == null)
             throw new NullPointerException("Listener cannot be null");
 
-        SpecificEventExecutor[] executors = createExecutor(listener.getClass());
+        List<SpecificEventExecutor> executors = createExecutor(listener.getClass());
 
         SpecificEntity specificEntity = this.entities.get(entity);
 
@@ -86,16 +61,53 @@ public final class SpecificEventManager
         return specificEntity.registerEvents(listener, executors);
     }
 
-    void handleEvent(Entity entity, SpecificEventKey key, Event event)
+    private List<SpecificEventExecutor> createExecutor(Class<? extends SpecificListener> clazz)
     {
-        SpecificEntity specificEntity = this.entities.get(entity);
+        return registeredExecutors.computeIfAbsent(clazz, listenerClass -> {
+            List<SpecificEventExecutor> executors = ImmutableList.copyOf(ASMSpecificEventExecutor.createExecutors(clazz));
+
+            for (SpecificEventExecutor executor : executors)
+            {
+                Class<? extends Event> handlerClass = executor.handlerClass;
+                EventListener listener = this.registeredListeners.get(handlerClass);
+
+                if (listener == null)
+                {
+                    listener = new EventListener();
+                    plugin.getServer().getPluginManager().registerEvent(handlerClass, listener, priority, EXECUTOR, plugin, false);
+                    plugin.getLogger().info("Entity listener registered: " + handlerClass.getName());
+                    this.registeredListeners.put(handlerClass, listener);
+                }
+
+                listener.addExtractor(executor.specificExtractor);
+            }
+
+            return executors;
+        });
+    }
+
+    public void unregisterEntity(Entity entity)
+    {
+        SpecificEntity specificEntity = entities.remove(entity);
 
         if (specificEntity != null)
-            specificEntity.handleEvent(key, event);
+            specificEntity.clear();
+    }
+
+    public void unregisterListener(Entity entity, SpecificListener listener)
+    {
+        SpecificEntity specificEntity = entities.get(entity);
+
+        if (specificEntity != null)
+        {
+            new NonBlock
+            specificEntity.
+        }
     }
 
     public void unregisterAll()
     {
+        HandlerList.unregisterAll(unallocListener);
         for (EventListener listener : registeredListeners.values())
             HandlerList.unregisterAll(listener);
 
@@ -104,26 +116,19 @@ public final class SpecificEventManager
         entities.clear();
     }
 
-    void removeEntity(LivingEntity entity)
+    private void handleEvent(Entity entity, SpecificEventKey key, Event event)
     {
-        SpecificEntity specificEntity = this.entities.remove(entity);
+        SpecificEntity specificEntity = entities.get(entity);
 
         if (specificEntity != null)
-            specificEntity.clear();
-    }
-
-    private static class EventListenerExecutor implements EventExecutor
-    {
-        @Override
-        public void execute(Listener listener, Event event)
-        {
-            ((EventListener) listener).onEvent(event);
-        }
+            specificEntity.handleEvent(key, event);
     }
 
     private class EventListener implements Listener
     {
+
         private final Set<SpecificExtractor<? extends Event>> specificExtractors = new LinkedHashSet<>();
+
         private SpecificExtractor<? extends Event>[] baked;
 
         public void addExtractor(SpecificExtractor<? extends Event> extractor)
@@ -147,7 +152,7 @@ public final class SpecificEventManager
                     Entity entity = specificExtractor.getEntity(event);
 
                     if (entity != null)
-                        handleEvent(entity, EVENT_KEY.set(eventClass, specificExtractor), event);
+                        handleEvent(entity, new SpecificEventKey(eventClass, specificExtractor), event);
                 }
             }
         }

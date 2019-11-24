@@ -87,7 +87,7 @@ public final class ASMSpecificEventExecutor
     }
 
     @SuppressWarnings("unchecked")
-    static SpecificEventExecutor[] createExecutors(Class<? extends SpecificListener> clazz)
+    static List<SpecificEventExecutor> createExecutors(Class<? extends SpecificListener> clazz)
     {
         int mod = clazz.getModifiers();
 
@@ -188,16 +188,16 @@ public final class ASMSpecificEventExecutor
         }
 
         int size = materials.size();
-        SpecificEventExecutor[] executors = new SpecificEventExecutor[size];
+        List<SpecificEventExecutor> list = new ArrayList<>(size);
 
         for (int i = 0; i < size; i++)
         {
             ListenerMaterial material = materials.get(i);
 
-            executors[i] = createListener(material.method, material.handlerClass, material.entityExtractor, material.priority, material.ignoreCancelled);
+            list.add(createListener(material.method, material.handlerClass, material.entityExtractor, material.priority, material.ignoreCancelled));
         }
 
-        return executors;
+        return list;
     }
 
     private static SpecificEventExecutor createListener(Method method, Class<?> handlerClass, SpecificExtractor<?> specificExtractor, SpecificEventPriority priority, boolean ignoreCancelled)
