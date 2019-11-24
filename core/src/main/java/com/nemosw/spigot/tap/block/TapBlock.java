@@ -2,6 +2,8 @@ package com.nemosw.spigot.tap.block;
 
 import com.nemosw.spigot.tap.Tap;
 
+import java.util.List;
+
 public interface TapBlock
 {
 
@@ -14,5 +16,7 @@ public interface TapBlock
     TapBlockData getBlockData();
 
     TapBlockData getBlockData(int data);
+
+    List<TapBlockData> getBlockDataList();
 
 }

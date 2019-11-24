@@ -128,6 +128,5 @@ dependencies {
 
 task spigotJar(type: Copy) {
     from shadowJar
-    into '/run/pluginstest/'
-    into 'W:\\Servers\\tap\\plugins'
+    into '/run/plugins/'
 }

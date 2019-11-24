@@ -66,6 +66,8 @@ public class DebugBlock extends DebugProcess
                         player.sendMessage("§bBlock");
                         player.sendMessage(tapBlock.getTextureId());
                         player.sendMessage(tapBlock.getId() + ":" + blockData.toLegacyData() + " " + (block.getData() & 0xFF));
+
+                        tapBlock.getBlockDataList();
                     }
                 }
             }
