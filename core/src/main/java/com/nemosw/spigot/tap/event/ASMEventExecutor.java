@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.specificevent;
+package com.nemosw.spigot.tap.event;
 
 import com.nemosw.tools.asm.ClassDefiner;
 import org.apache.commons.lang.Validate;

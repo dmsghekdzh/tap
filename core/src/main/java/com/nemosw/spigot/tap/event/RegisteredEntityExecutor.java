@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.specificevent;
+package com.nemosw.spigot.tap.event;
 
 import com.nemosw.mox.collections.Node;
 import org.bukkit.event.Cancellable;

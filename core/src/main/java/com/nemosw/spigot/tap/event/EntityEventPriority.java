@@ -1,4 +1,4 @@
-package com.nemosw.spigot.tap.specificevent;
+package com.nemosw.spigot.tap.event;
 
 public enum EntityEventPriority
 {
@@ -6,5 +6,6 @@ public enum EntityEventPriority
     LOW,
     NORMAL,
     HIGH,
-    HIGHEST
+    HIGHEST,
+    MONITOR
 }
