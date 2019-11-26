@@ -20,6 +20,7 @@ allprojects {
         mavenCentral() // junit
         mavenLocal() // nms spigot
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" } // bungeecord chat
+        maven { url = "https://jitpack.io/"}
     }
 }
 
@@ -107,7 +108,7 @@ project(':core') {
     dependencies {
         compileOnly files(Jvm.current().toolsJar)
         compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
-        compile 'com.nemosw.mox:mox-collections:1.0'
+        compile 'com.github.nemosrc:mox-collection:1.1'
         compile 'com.nemosw.mox:mox-task:1.0'
         compile 'com.nemosw.mox:mox-math:1.0.2'
         compile 'com.nemosw.mox:mox-tools:1.1'
