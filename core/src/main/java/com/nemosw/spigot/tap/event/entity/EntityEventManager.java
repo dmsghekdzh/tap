@@ -1,5 +1,6 @@
 package com.nemosw.spigot.tap.event.entity;
 
+import com.nemosw.mox.collections.CleanableWeakHashMap;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -10,7 +11,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * @author Nemo
@@ -22,7 +22,7 @@ public class EntityEventManager implements EventExecutor
 
     private final EntityEventPriority priority;
 
-    private final Map<Entity, EventEntity> entities = new WeakHashMap<>();
+    private final Map<Entity, EventEntity> entities;
 
     public EntityEventManager(Plugin plugin)
     {
@@ -33,6 +33,7 @@ public class EntityEventManager implements EventExecutor
     {
         this.plugin = plugin;
         this.priority = priority;
+        this.entities = new CleanableWeakHashMap<>(EventEntity::clear);
     }
 
     public Plugin getPlugin()

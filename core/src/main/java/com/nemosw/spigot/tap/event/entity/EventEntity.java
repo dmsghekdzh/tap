@@ -2,6 +2,7 @@ package com.nemosw.spigot.tap.event.entity;
 
 import org.bukkit.event.Event;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -9,10 +10,14 @@ import java.util.Map;
  */
 class EventEntity
 {
-    private final Map<EventKey,>
+    private final Map<Class<?>, EntityHandlerList> handlers = new HashMap<>();
 
-    void handleEvent(EventKey key, Event event)
+    void handleEvent(Class<?> eventClass, EventEntityProvider provider, Event event)
     {
 
+    }
+
+    public void clear()
+    {
     }
 }
