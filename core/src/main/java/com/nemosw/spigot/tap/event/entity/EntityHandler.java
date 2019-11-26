@@ -1,14 +1,23 @@
 package com.nemosw.spigot.tap.event.entity;
 
+import org.bukkit.event.EventPriority;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * @author Nemo
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface EntityHandler
 {
 
-    EntityEventPriority priority() default EntityEventPriority.NORMAL;
+    EventPriority priority() default EventPriority.NORMAL;
 
-    Class<? extends EventEntityProvider> provider() default EventEntityProvider.class;
+    Class<? extends EntityProvider> provider() default EntityProvider.class;
 
     boolean ignoreCancelled() default false;
 

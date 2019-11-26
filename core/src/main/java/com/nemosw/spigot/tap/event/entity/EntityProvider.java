@@ -9,6 +9,6 @@ import org.bukkit.event.Event;
 public interface EntityProvider<T extends Event>
 {
 
-    Entity getEntityFrom(T event);
+    Entity getFrom(T event);
 
 }
