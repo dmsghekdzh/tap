@@ -5,6 +5,8 @@ import com.nemosw.spigot.tap.event.entity.EntityProvider;
 import java.lang.reflect.ParameterizedType;
 
 /**
+ * {@link EntityProvider}의 컨테이너 클래스입니다.
+ *
  * @author Nemo
  */
 final class EventEntityProvider

@@ -1,5 +1,6 @@
 package com.nemosw.spigot.tap.event.entity.impl;
 
+import com.nemosw.spigot.tap.event.entity.EntityHandler;
 import com.nemosw.spigot.tap.event.entity.EntityProvider;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.block.*;
@@ -16,7 +17,12 @@ import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.vehicle.VehicleEvent;
 
 /**
+ * 기본 이벤트 엔티티 제공자입니다.
+ * {@link com.nemosw.spigot.tap.event.entity.EntityHandler}에서 {@link EntityHandler#provider()}를 이 클래스로 설정하면 미리 선언된 제공자를 사용합니다.
+ *
  * @author Nemo
+ *
+ * @see EntityProvider
  */
 public abstract class DefaultProvider<T> implements EntityProvider
 {

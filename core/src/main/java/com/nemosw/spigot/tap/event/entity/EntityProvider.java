@@ -11,6 +11,8 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 /**
+ * {@link EntityHandler}에서 제공할 {@link Entity}를 지정 할 수 있는 클래스입니다.
+ *
  * @author Nemo
  */
 public interface EntityProvider<T extends Event>

@@ -9,6 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * {@link EntityListener} 클래스 내에 {@link org.bukkit.event.Event}를 받을 메서드에 사용하세요
+ *
  * @author Nemo
  */
 @Retention(RetentionPolicy.RUNTIME)

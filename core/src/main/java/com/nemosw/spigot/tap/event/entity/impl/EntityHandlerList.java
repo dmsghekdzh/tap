@@ -7,6 +7,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
 /**
+ *
+ *
  * @author Nemo
  */
 final class EntityHandlerList

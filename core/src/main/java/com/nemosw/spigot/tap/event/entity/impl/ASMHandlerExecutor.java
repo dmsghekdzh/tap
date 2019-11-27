@@ -13,12 +13,16 @@ import java.util.HashMap;
 import static org.objectweb.asm.Opcodes.*;
 
 /**
+ * {@link EntityListener} 의 리스너 메소드를 호출하기 위한 {@link HandlerExecutor}를 ASM으로 구현하기 위한 클래스입니다.
+ *
  * @author Nemo
  */
 final class ASMHandlerExecutor
 {
     private static final Method METHOD_EXECUTOR;
+
     private static final HashMap<Method, HandlerExecutor> CACHE = new HashMap<>();
+
     private static int handlerNumber;
 
     static
@@ -33,12 +37,19 @@ final class ASMHandlerExecutor
         }
     }
 
+    /**
+     * 동적 바이트코드로 구현된 {@link HandlerExecutor}를 생성합니다.
+     *
+     * @param method {@link HandlerExecutor}에서 호출할 메소드
+     * @return ASM으로 구현된 {@link HandlerExecutor}
+     */
     static HandlerExecutor create(Method method)
     {
         return CACHE.computeIfAbsent(method, key -> {
-            String className = Type.getInternalName(ASMHandlerExecutor.class) + "_" + key.getClass().getName() + "_" + key.getName() + "_" + handlerNumber++;
+            Class<?> listenerClass = key.getDeclaringClass();
+            String className = Type.getInternalName(ASMHandlerExecutor.class) + "_" + listenerClass.getName() + "_" + key.getName() + "_" + handlerNumber++;
             byte[] classData = generateClassData(key, className);
-            Class<?> executorClass = ClassDefiner.defineClass(className, classData, method.getDeclaringClass().getClassLoader());
+            Class<?> executorClass = ClassDefiner.defineClass(className, classData, listenerClass.getClassLoader());
 
             try
             {
@@ -51,6 +62,13 @@ final class ASMHandlerExecutor
         });
     }
 
+    /**
+     * Method를 호출하기 위한 {@link HandlerExecutor} 클래스를 구현한 바이트코드를 생성합니다.
+     *
+     * @param method    {@link HandlerExecutor}에서 호출할 메소드
+     * @param className ASM으로 구현될 {@link HandlerExecutor}의 클래스 이름
+     * @return 바이트코드
+     */
     private static byte[] generateClassData(Method method, String className)
     {
         String objectName = Type.getInternalName(Object.class);

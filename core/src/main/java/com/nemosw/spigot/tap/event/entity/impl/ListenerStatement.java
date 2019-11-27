@@ -1,6 +1,8 @@
 package com.nemosw.spigot.tap.event.entity.impl;
 
 /**
+ * {@link com.nemosw.spigot.tap.event.entity.EntityListener}의 정보를 관리하는 클래스입니다.
+ *
  * @author Nemo
  */
 final class ListenerStatement

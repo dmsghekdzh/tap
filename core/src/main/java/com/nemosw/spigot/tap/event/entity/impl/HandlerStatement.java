@@ -7,6 +7,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 
 /**
+ * {@link com.nemosw.spigot.tap.event.entity.EntityHandler} 메서드의 정보를 관리하는 클래스입니다.
+ *
  * @author Nemo
  */
 final class HandlerStatement
@@ -64,6 +66,14 @@ final class HandlerStatement
         return executor;
     }
 
+    /**
+     * 이벤트를 호출합니다.
+     *
+     * @param entity
+     * @param provider
+     * @param event
+     * @param listener
+     */
     void callEvent(Entity entity, EventEntityProvider provider, Event event, EntityListener listener)
     {
         if (provider != this.provider || (ignoreCancelled && event instanceof Cancellable && ((Cancellable) event).isCancelled()))

@@ -5,12 +5,12 @@ import com.nemosw.spigot.tap.event.entity.EntityListener;
 import com.nemosw.spigot.tap.event.entity.RegisteredEntityListener;
 
 /**
+ * {@link RegisteredEntityListener}의 구현체입니다.
+ *
  * @author Nemo
  */
 final class RegisteredEntityListenerImpl implements RegisteredEntityListener
 {
-
-    private final ListenerStatement statement;
 
     private final EntityListener listener;
 
@@ -20,7 +20,6 @@ final class RegisteredEntityListenerImpl implements RegisteredEntityListener
 
     RegisteredEntityListenerImpl(ListenerStatement statement, EntityListener listener)
     {
-        this.statement = statement;
         this.listener = listener;
 
         HandlerStatement[] handlerStatements = statement.getHandlerStatements();
@@ -40,7 +39,7 @@ final class RegisteredEntityListenerImpl implements RegisteredEntityListener
         return listener;
     }
 
-    public RegisteredEntityHandler[] getHandlers()
+    RegisteredEntityHandler[] getHandlers()
     {
         return handlers;
     }

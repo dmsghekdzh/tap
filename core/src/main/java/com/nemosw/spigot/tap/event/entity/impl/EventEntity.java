@@ -5,6 +5,8 @@ import com.nemosw.mox.collections.EventNodeList;
 import java.util.HashMap;
 
 /**
+ * {@link com.nemosw.spigot.tap.event.entity.EntityListener}가 등록되는 클래스입니다.
+ *
  * @author Nemo
  */
 final class EventEntity
@@ -26,6 +28,9 @@ final class EventEntity
         }
     }
 
+    /**
+     * 등록된 모든 리스너를 해제합니다.
+     */
     void unregisterAll()
     {
         listeners.clear();

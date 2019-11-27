@@ -2,12 +2,10 @@ package com.nemosw.spigot.tap.event.entity.impl;
 
 import com.google.common.reflect.TypeToken;
 import com.nemosw.mox.collections.CleanableWeakHashMap;
+import com.nemosw.spigot.tap.event.ASMEventExecutor;
 import com.nemosw.spigot.tap.event.entity.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 
@@ -19,6 +17,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
+ * {@link EntityEventManager}의 구현체입니다.
+ * 지정된 {@link Entity}에게 {@link EntityListener}를 등록 할 수 있습니다.
+ *
  * @author Nemo
  */
 public final class EntityEventManagerImpl implements EntityEventManager
@@ -38,15 +39,24 @@ public final class EntityEventManagerImpl implements EntityEventManager
 
     private final CleanableWeakHashMap<Entity, EventEntity> entities = new CleanableWeakHashMap<>(EventEntity::unregisterAll);
 
+    private final UnregisterListener unregisterListener;
+
+    private boolean valid;
+
     public EntityEventManagerImpl(Plugin plugin, EventPriority priority)
     {
         this.plugin = plugin;
         this.priority = priority;
+        this.unregisterListener = new UnregisterListener(this);
+        ASMEventExecutor.registerEvents(this.unregisterListener, plugin);
+        this.valid = true;
     }
 
     @Override
     public RegisteredEntityListener registerEvents(Entity entity, EntityListener listener)
     {
+        checkState();
+
         EventEntity eventEntity = entities.computeIfAbsent(entity, target -> new EventEntity());
         RegisteredEntityListenerImpl registeredEntityListener = createRegisteredEntityListener(listener);
         eventEntity.register(registeredEntityListener);
@@ -165,9 +175,20 @@ public final class EntityEventManagerImpl implements EntityEventManager
     }
 
     @Override
+    public void unregister(Entity entity)
+    {
+        checkState();
+
+        EventEntity eventEntity = entities.remove(entity);
+
+        if (eventEntity != null)
+            eventEntity.unregisterAll();
+    }
+
+    @Override
     public void unregisterAll()
     {
-        CleanableWeakHashMap<Entity, EventEntity> entities = this.entities;
+        checkState();
 
         for (EventEntity eventEntity : entities.values())
         {
@@ -175,6 +196,39 @@ public final class EntityEventManagerImpl implements EntityEventManager
         }
 
         entities.clear();
+    }
+
+    @Override
+    public void destroy()
+    {
+        checkState();
+
+        valid = false;
+
+        unregisterAll();
+
+        HandlerList.unregisterAll(this.unregisterListener);
+
+        for (EventListener listener : listeners.values())
+        {
+            HandlerList.unregisterAll(listener);
+        }
+
+        listeners.clear();
+        statements.clear();
+        customProviders.clear();
+    }
+
+    private void checkState()
+    {
+        if (!valid)
+            throw new IllegalStateException("Invalid " + getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(this)));
+    }
+
+    @Override
+    public boolean isValid()
+    {
+        return valid;
     }
 
     /**
