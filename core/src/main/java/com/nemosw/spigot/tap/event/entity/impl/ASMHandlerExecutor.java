@@ -1,5 +1,6 @@
 package com.nemosw.spigot.tap.event.entity.impl;
 
+import com.nemosw.spigot.tap.event.ASMEventExecutor;
 import com.nemosw.spigot.tap.event.entity.EntityListener;
 import com.nemosw.tools.asm.ClassDefiner;
 import org.bukkit.event.Event;
@@ -47,8 +48,8 @@ final class ASMHandlerExecutor
     {
         return CACHE.computeIfAbsent(method, key -> {
             Class<?> listenerClass = key.getDeclaringClass();
-            String className = Type.getInternalName(ASMHandlerExecutor.class) + "_" + listenerClass.getName() + "_" + key.getName() + "_" + handlerNumber++;
-            byte[] classData = generateClassData(key, className);
+            String className = ASMEventExecutor.class.getName() + "_" + listenerClass.getSimpleName() + "_" + key.getName() + "_" + handlerNumber++;
+            byte[] classData = generateClassData(key, className.replace('.', '/'));
             Class<?> executorClass = ClassDefiner.defineClass(className, classData, listenerClass.getClassLoader());
 
             try
@@ -80,7 +81,7 @@ final class ASMHandlerExecutor
 
         //Constructor
         {
-            MethodVisitor methodVisitor = classWriter.visitMethod(0, "<init>", "()V", null, null);
+            MethodVisitor methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
             methodVisitor.visitCode();
             methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitMethodInsn(INVOKESPECIAL, objectName, "<init>", "()V", false);

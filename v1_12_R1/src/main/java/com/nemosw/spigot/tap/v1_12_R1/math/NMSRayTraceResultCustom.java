@@ -14,6 +14,7 @@ public class NMSRayTraceResultCustom extends NMSRayTraceResult
         this.custom = custom;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getCustom()
     {

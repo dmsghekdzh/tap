@@ -231,7 +231,7 @@ public class ASMEventExecutor
 
         ClassWriter cw = new ClassWriter(0);
 
-        cw.visit(V1_8, ACC_PUBLIC | ACC_SUPER, desc, null, OBJECT_NAME, new String[]{Type.getInternalName(EventExecutor.class)});
+        cw.visit(V1_6, ACC_PUBLIC | ACC_SUPER, desc, null, OBJECT_NAME, new String[]{Type.getInternalName(EventExecutor.class)});
         cw.visitSource(".dynamic", null);
 
         {

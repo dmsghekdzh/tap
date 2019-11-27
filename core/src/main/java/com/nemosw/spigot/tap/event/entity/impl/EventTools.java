@@ -3,6 +3,8 @@ package com.nemosw.spigot.tap.event.entity.impl;
 import com.nemosw.spigot.tap.event.entity.EntityProvider;
 import org.bukkit.event.Event;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +60,7 @@ final class EventTools
             try
             {
                 eventClass.getDeclaredMethod("getHandlerList");
+                REG_CLASSES.put(eventClass, handlerClass = eventClass);
             }
             catch (NoSuchMethodException e)
             {
@@ -94,5 +97,25 @@ final class EventTools
         }
 
         throw new IllegalArgumentException("Not found DefaultProvider for " + eventClass);
+    }
+
+    static Class<?> getGenericEventType(Class<?> providerClass)
+    {
+        String prefix = EntityProvider.class.getName() + "<"; //제너릭 타임 이름은 ClassName<Type>으로 반환됨
+        Type[] genericInterfaces = providerClass.getGenericInterfaces();
+
+        do
+        {
+            for (Type genericInterface : genericInterfaces)
+            {
+                if (genericInterface.getTypeName().startsWith(prefix))
+                {
+                    return (Class<?>) ((ParameterizedType) genericInterface).getActualTypeArguments()[0];
+                }
+            }
+        }
+        while ((providerClass = providerClass.getSuperclass()) != Object.class);
+
+        throw new IllegalArgumentException(providerClass + " is not EntityProvider");
     }
 }

@@ -60,7 +60,7 @@ public final class DebugModule
 
     public final boolean stop()
     {
-        if (this.process == null)
+        if (process == null)
             return false;
 
         process.stop();

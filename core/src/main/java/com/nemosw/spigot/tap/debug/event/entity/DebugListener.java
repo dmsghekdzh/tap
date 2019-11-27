@@ -28,6 +28,6 @@ public class DebugListener implements EntityListener
         registeredEntityListener.unregister();
 
         Location loc = entity.getLocation();
-        loc.getWorld().createExplosion(loc, 2.0F);
+        loc.getWorld().createExplosion(loc, 0.1F);
     }
 }

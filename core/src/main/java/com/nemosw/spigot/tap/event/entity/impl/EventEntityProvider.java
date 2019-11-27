@@ -2,8 +2,6 @@ package com.nemosw.spigot.tap.event.entity.impl;
 
 import com.nemosw.spigot.tap.event.entity.EntityProvider;
 
-import java.lang.reflect.ParameterizedType;
-
 /**
  * {@link EntityProvider}의 컨테이너 클래스입니다.
  *
@@ -18,7 +16,7 @@ final class EventEntityProvider
 
     EventEntityProvider(EntityProvider provider)
     {
-        this.eventClass = (Class<?>) ((ParameterizedType) provider.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        eventClass = EventTools.getGenericEventType(provider.getClass());
         this.provider = provider;
     }
 

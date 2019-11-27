@@ -6,7 +6,10 @@ import com.nemosw.spigot.tap.Tap;
 import com.nemosw.spigot.tap.event.ASMEventExecutor;
 import com.nemosw.spigot.tap.event.entity.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.*;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 
@@ -94,7 +97,7 @@ public final class EntityEventManagerImpl implements EntityEventManager
                     {
                         Method real = superClass.getDeclaredMethod(method.getName(), method.getParameterTypes());
 
-                        if (real.isAnnotationPresent(EventHandler.class))
+                        if (real.isAnnotationPresent(EntityHandler.class))
                         {
                             try
                             {
@@ -127,9 +130,10 @@ public final class EntityEventManagerImpl implements EntityEventManager
     private void registerEvent(HandlerStatement statement)
     {
         Class<?> registrationClass = statement.getRegistrationClass();
+
         EventListener listener = listeners.computeIfAbsent(registrationClass, clazz -> {
             EventListener newListener = new EventListener();
-            plugin.getServer().getPluginManager().registerEvent(statement.getRegistrationClass().asSubclass(Event.class), newListener, priority, EVENT_EXECUTOR, plugin, false);
+            plugin.getServer().getPluginManager().registerEvent(clazz.asSubclass(Event.class), newListener, priority, EVENT_EXECUTOR, plugin, false);
 
             return newListener;
         });
@@ -209,8 +213,6 @@ public final class EntityEventManagerImpl implements EntityEventManager
     {
         checkState();
 
-        valid = false;
-
         unregisterAll();
 
         HandlerList.unregisterAll(this.unregisterListener);
@@ -223,6 +225,8 @@ public final class EntityEventManagerImpl implements EntityEventManager
         listeners.clear();
         statements.clear();
         customProviders.clear();
+
+        valid = false;
     }
 
     private void checkState()

@@ -8,7 +8,7 @@ import org.bukkit.event.Event;
  *
  * @author Nemo
  */
-interface HandlerExecutor
+public interface HandlerExecutor
 {
 
     void execute(EntityListener listener, Event event);
