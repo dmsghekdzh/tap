@@ -15,6 +15,8 @@ import com.nemosw.spigot.tap.world.WorldSupport;
 
 public final class Tap
 {
+    public static final boolean DEBUG = true;
+
     public static final TapBlockSupport BLOCK = LibraryLoader.load(TapBlockSupport.class);
 
     public static final EntitySelector ENTITY_SELECTOR = LibraryLoader.load(EntitySelector.class);
@@ -40,4 +42,5 @@ public final class Tap
     public static final NBTSupport NBT = LibraryLoader.load(NBTSupport.class);
 
     private Tap() {}
+
 }

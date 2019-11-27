@@ -2,6 +2,7 @@ package com.nemosw.spigot.tap.event.entity.impl;
 
 import com.google.common.reflect.TypeToken;
 import com.nemosw.mox.collections.CleanableWeakHashMap;
+import com.nemosw.spigot.tap.Tap;
 import com.nemosw.spigot.tap.event.ASMEventExecutor;
 import com.nemosw.spigot.tap.event.entity.*;
 import org.bukkit.entity.Entity;
@@ -178,6 +179,11 @@ public final class EntityEventManagerImpl implements EntityEventManager
     public void unregister(Entity entity)
     {
         checkState();
+
+        if (Tap.DEBUG)
+        {
+            System.out.println("EventEntity clear: " + entity);
+        }
 
         EventEntity eventEntity = entities.remove(entity);
 
