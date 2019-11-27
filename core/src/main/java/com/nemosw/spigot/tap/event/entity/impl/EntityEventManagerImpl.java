@@ -1,30 +1,40 @@
 package com.nemosw.spigot.tap.event.entity.impl;
 
+import com.google.common.reflect.TypeToken;
 import com.nemosw.mox.collections.CleanableWeakHashMap;
-import com.nemosw.spigot.tap.event.entity.EntityEventManager;
-import com.nemosw.spigot.tap.event.entity.EntityListener;
-import com.nemosw.spigot.tap.event.entity.RegisteredEntityListener;
+import com.nemosw.spigot.tap.event.entity.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Nemo
  */
-final class EntityEventManagerImpl implements EntityEventManager
+public final class EntityEventManagerImpl implements EntityEventManager
 {
+
+    private final EventExecutor EVENT_EXECUTOR = (listener, event) -> ((EventListener) listener).onEvent(event);
 
     private final Plugin plugin;
 
     private final EventPriority priority;
 
-    private final Map<Class<?>, ListenerStatement> statements = new HashMap<>();
+    private final HashMap<Class<?>, EventEntityProvider> customProviders = new HashMap<>();
+
+    private final HashMap<Class<?>, ListenerStatement> statements = new HashMap<>();
+
+    private final HashMap<Class<?>, EventListener> listeners = new HashMap<>();
 
     private final CleanableWeakHashMap<Entity, EventEntity> entities = new CleanableWeakHashMap<>(EventEntity::unregisterAll);
 
@@ -37,7 +47,121 @@ final class EntityEventManagerImpl implements EntityEventManager
     @Override
     public RegisteredEntityListener registerEvents(Entity entity, EntityListener listener)
     {
+        EventEntity eventEntity = entities.computeIfAbsent(entity, target -> new EventEntity());
+        RegisteredEntityListenerImpl registeredEntityListener = createRegisteredEntityListener(listener);
+        eventEntity.register(registeredEntityListener);
 
+        return registeredEntityListener;
+    }
+
+    private RegisteredEntityListenerImpl createRegisteredEntityListener(EntityListener listener)
+    {
+        ListenerStatement statement = getOrRegisterListenerStatement(listener.getClass());
+        return new RegisteredEntityListenerImpl(statement, listener);
+    }
+
+    private ListenerStatement getOrRegisterListenerStatement(Class<?> listenerClass)
+    {
+        return statements.computeIfAbsent(listenerClass, clazz -> {
+            int mod = listenerClass.getModifiers();
+
+            if (!Modifier.isPublic(mod))
+                throw new IllegalArgumentException("EntityListener modifier must be public");
+
+            ArrayList<HandlerStatement> handlerStatements = new ArrayList<>();
+            Method[] methods = listenerClass.getMethods();
+            Set<? extends Class<?>> supers = TypeToken.of(listenerClass).getTypes().rawTypes();
+
+            for (Method method : methods)
+            {
+                for (Class<?> superClass : supers)
+                {
+                    if (!EntityListener.class.isAssignableFrom(superClass))
+                        break;
+
+                    try
+                    {
+                        Method real = superClass.getDeclaredMethod(method.getName(), method.getParameterTypes());
+
+                        if (real.isAnnotationPresent(EventHandler.class))
+                        {
+                            try
+                            {
+                                handlerStatements.add(createHandlerStatement(method));
+                            }
+                            catch (Exception e)
+                            {
+                                throw new IllegalArgumentException("Failed to create HandlerStatement for " + real);
+                            }
+                            break;
+                        }
+                    }
+                    catch (NoSuchMethodException | SecurityException ignored)
+                    {
+                    }
+                }
+            }
+
+            ListenerStatement statement = new ListenerStatement(listenerClass, handlerStatements.toArray(new HandlerStatement[0]));
+
+            for (HandlerStatement handlerStatement : statement.getHandlerStatements())
+            {
+                registerEvent(handlerStatement);
+            }
+
+            return statement;
+        });
+    }
+
+    private void registerEvent(HandlerStatement statement)
+    {
+        Class<?> registrationClass = statement.getRegistrationClass();
+        EventListener listener = listeners.computeIfAbsent(registrationClass, clazz -> {
+            EventListener newListener = new EventListener();
+            plugin.getServer().getPluginManager().registerEvent(statement.getRegistrationClass().asSubclass(Event.class), newListener, priority, EVENT_EXECUTOR, plugin, false);
+
+            return newListener;
+        });
+
+        listener.addProvider(statement.getProvider());
+    }
+
+    private HandlerStatement createHandlerStatement(Method method)
+    {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+
+        if (parameterTypes.length != 1)
+            throw new IllegalArgumentException("EntityHandler methods must require a single argument: " + method);
+
+        if (method.getReturnType() != void.class)
+            throw new IllegalArgumentException("EntityHandler methods must return 'void': " + method);
+
+        Class<?> eventClass = parameterTypes[0];
+
+        if (!Event.class.isAssignableFrom(eventClass))
+            throw new IllegalArgumentException("'" + eventClass.getName() + "' is not event class : " + method);
+
+        EntityHandler handler = method.getAnnotation(EntityHandler.class);
+        Class<?> registrationClass = EventTools.getRegistrationClass(eventClass);
+        Class<?> providerClass = handler.provider();
+        EventEntityProvider provider = providerClass == DefaultProvider.class ? EventTools.findDefaultProvider(eventClass) : createEntityProvider(providerClass);
+        HandlerExecutor executor = ASMHandlerExecutor.create(method);
+
+        return new HandlerStatement(eventClass, registrationClass, provider, handler.priority(), handler.ignoreCancelled(), executor);
+    }
+
+    private EventEntityProvider createEntityProvider(Class<?> providerClass)
+    {
+        return customProviders.computeIfAbsent(providerClass, clazz -> {
+            try
+            {
+                return new EventEntityProvider((EntityProvider) clazz.newInstance());
+            }
+            catch (Exception e)
+            {
+                throw new IllegalArgumentException(e);
+            }
+        });
     }
 
     @Override
@@ -53,16 +177,19 @@ final class EntityEventManagerImpl implements EntityEventManager
         entities.clear();
     }
 
+    /**
+     * {@link org.bukkit.event.entity.EntityEvent} 에게 이벤트를 전달하기 위한 {@link Listener}
+     */
     private class EventListener implements Listener
     {
-        private final ArrayList<EventEntityProvider> providerList = new ArrayList<>();
+        private final LinkedHashSet<EventEntityProvider> providers = new LinkedHashSet<>();
 
-        private EventEntityProvider[] providers;
+        private EventEntityProvider[] bake;
 
         @SuppressWarnings("unchecked")
-        public void onEvent(Event event)
+        void onEvent(Event event)
         {
-            for (EventEntityProvider provider : getProviders())
+            for (EventEntityProvider provider : getBake())
             {
                 Class<?> eventClass = event.getClass();
 
@@ -78,29 +205,27 @@ final class EntityEventManagerImpl implements EntityEventManager
                         {
                             Class<?> regClass = EventTools.getRegistrationClass(eventClass);
                             EntityHandlerList handlers = eventEntity.getHandlers(regClass);
-
                             handlers.callEvent(event, provider, eventClass, entity);
-
                         }
                     }
                 }
             }
         }
 
-        private EventEntityProvider[] getProviders()
+        private EventEntityProvider[] getBake()
         {
-            EventEntityProvider[] providers = this.providers;
+            EventEntityProvider[] bake = this.bake;
 
-            if (providers != null)
-                return providers;
+            if (bake != null)
+                return bake;
 
-            return this.providers = providerList.toArray(new EventEntityProvider[0]);
+            return this.bake = providers.toArray(new EventEntityProvider[0]);
         }
 
         private void addProvider(EventEntityProvider provider)
         {
-            this.providerList.add(provider);
-            this.providers = null;
+            this.providers.add(provider);
+            this.bake = null;
         }
     }
 

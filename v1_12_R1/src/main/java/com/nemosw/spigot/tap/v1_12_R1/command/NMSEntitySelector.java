@@ -27,6 +27,7 @@ public final class NMSEntitySelector implements EntitySelector
         ICommandListener commandSender = getICommandSender(sender);
         MinecraftServer server = SERVER;
         Class<? extends Entity> targetEntity = NMSEntityTypes.getEntityClass(target);
+
         if (targetEntity == null)
             targetEntity = Entity.class;
 

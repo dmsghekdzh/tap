@@ -1,5 +1,6 @@
 package com.nemosw.spigot.tap.event.entity;
 
+import com.nemosw.spigot.tap.event.entity.impl.DefaultProvider;
 import org.bukkit.event.EventPriority;
 
 import java.lang.annotation.ElementType;
@@ -17,7 +18,7 @@ public @interface EntityHandler
 
     EventPriority priority() default EventPriority.NORMAL;
 
-    Class<? extends EntityProvider> provider() default EntityProvider.class;
+    Class<? extends EntityProvider> provider() default DefaultProvider.class;
 
     boolean ignoreCancelled() default false;
 

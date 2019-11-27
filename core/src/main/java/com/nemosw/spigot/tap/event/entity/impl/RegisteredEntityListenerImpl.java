@@ -10,16 +10,28 @@ import com.nemosw.spigot.tap.event.entity.RegisteredEntityListener;
 final class RegisteredEntityListenerImpl implements RegisteredEntityListener
 {
 
+    private final ListenerStatement statement;
+
     private final EntityListener listener;
 
     private final RegisteredEntityHandler[] handlers;
 
     Node<RegisteredEntityListenerImpl> node;
 
-    RegisteredEntityListenerImpl(EntityListener listener, RegisteredEntityHandler[] handlers)
+    RegisteredEntityListenerImpl(ListenerStatement statement, EntityListener listener)
     {
+        this.statement = statement;
         this.listener = listener;
-        this.handlers = handlers;
+
+        HandlerStatement[] handlerStatements = statement.getHandlerStatements();
+        RegisteredEntityHandler[] entityHandlers = new RegisteredEntityHandler[handlerStatements.length];
+
+        for (int i = 0, length = handlerStatements.length; i < length; i++)
+        {
+            entityHandlers[i] = new RegisteredEntityHandler(listener, handlerStatements[i]);
+        }
+
+        this.handlers = entityHandlers;
     }
 
     @Override

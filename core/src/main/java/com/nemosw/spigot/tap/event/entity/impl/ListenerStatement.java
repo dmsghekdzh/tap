@@ -5,6 +5,7 @@ package com.nemosw.spigot.tap.event.entity.impl;
  */
 final class ListenerStatement
 {
+
     private final Class<?> listenerClass;
 
     private final HandlerStatement[] statements;
@@ -20,8 +21,9 @@ final class ListenerStatement
         return listenerClass;
     }
 
-    public HandlerStatement[] getStatements()
+    public HandlerStatement[] getHandlerStatements()
     {
         return statements;
     }
+
 }
