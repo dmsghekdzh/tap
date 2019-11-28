@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public final class UnregisterListener implements Listener
 {
+
     private final EntityEventManager manager;
 
     UnregisterListener(EntityEventManager manager)
@@ -37,4 +38,5 @@ public final class UnregisterListener implements Listener
 
         manager.unregister(entity);
     }
+
 }

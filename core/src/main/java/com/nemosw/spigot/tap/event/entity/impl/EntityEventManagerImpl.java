@@ -41,7 +41,9 @@ public final class EntityEventManagerImpl implements EntityEventManager
 
     private final HashMap<Class<?>, EventListener> listeners = new HashMap<>();
 
-    private final CleanableWeakHashMap<Entity, EventEntity> entities = new CleanableWeakHashMap<>(EventEntity::unregisterAll);
+    private final CleanableWeakHashMap<Entity, EventEntity> entities = new CleanableWeakHashMap<>(Tap.DEBUG ? eventEntity -> {
+        System.out.println("Clean up: " + eventEntity);
+    } : EventEntity::unregisterAll);
 
     private final UnregisterListener unregisterListener;
 
@@ -183,11 +185,6 @@ public final class EntityEventManagerImpl implements EntityEventManager
     public void unregister(Entity entity)
     {
         checkState();
-
-        if (Tap.DEBUG)
-        {
-            System.out.println("EventEntity clear: " + entity);
-        }
 
         EventEntity eventEntity = entities.remove(entity);
 
