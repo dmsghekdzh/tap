@@ -71,8 +71,8 @@ subprojects {
                     url = 'https://github.com/nemosrc/tap'
                     licenses {
                         license {
-                            name = 'MIT License'
-                            url = 'http://www.opensource.org/licenses/mit-license.php'
+                            name = 'GPL-2.0'
+                            url = 'http://www.opensource.org/licenses/gpl-2.0.php'
                         }
                     }
                     developers {

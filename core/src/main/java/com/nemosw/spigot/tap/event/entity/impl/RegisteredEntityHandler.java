@@ -43,7 +43,6 @@ final class RegisteredEntityHandler
         node = null;
     }
 
-
     /**
      * 핸들러의 노드 연결을 약하게 해제합니다.
      * 외부에서 {@link com.nemosw.spigot.tap.event.entity.RegisteredEntityListener}를 등록 해제 할 때 호출됩니다.
