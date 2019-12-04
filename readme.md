@@ -52,7 +52,7 @@ allprojects {
 
 ...
 dependencies {
-    implementation 'com.nemosw.spigot:tap-v1_12_R1:1.3.2'
+    implementation 'com.nemosw.spigot:tap-v1_12_R1:1.3.3'
 }
 ```
 
