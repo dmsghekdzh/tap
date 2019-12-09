@@ -31,7 +31,7 @@ allprojects {
 
 ...
 dependencies {
-    implementation 'com.github.nemosrc:tap:1.3.2'
+    implementation 'com.github.nemosrc:tap:1.3.3'
 }
 ```
 
@@ -52,7 +52,7 @@ allprojects {
 
 ...
 dependencies {
-    implementation 'com.nemosw.spigot:tap-v1_12_R1:1.3.2'
+    implementation 'com.nemosw.spigot:tap-v1_12_R1:1.3.3'
 }
 ```
 
