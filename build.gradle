@@ -8,7 +8,7 @@ allprojects {
     apply plugin: 'java'
 
     group 'com.nemosw.spigot'
-    version '1.3.3'
+    version '1.3.4'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -16,7 +16,6 @@ allprojects {
     javadoc.options.encoding = 'UTF-8'
 
     repositories {
-        jcenter() // max library
         mavenCentral() // junit
         mavenLocal() // nms spigot
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" } // bungeecord chat
@@ -109,9 +108,9 @@ project(':core') {
         compileOnly files(Jvm.current().toolsJar)
         compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
         compile 'com.github.nemosrc:mox-collection:1.1'
-        compile 'com.nemosw.mox:mox-task:1.0'
-        compile 'com.nemosw.mox:mox-math:1.0.2'
-        compile 'com.nemosw.mox:mox-tools:1.1'
+        compile 'com.github.nemosrc:mox-task:1.0'
+        compile 'com.github.nemosrc:mox-math:1.0.2'
+        compile 'com.github.nemosrc:mox-tools:1.1'
     }
 }
 
