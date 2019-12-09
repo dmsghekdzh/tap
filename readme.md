@@ -1,4 +1,4 @@
-# Tap [![Build Status](https://travis-ci.org/nemosrc/tap.svg?branch=master)](https://travis-ci.org/nemosrc/tap) [![Maintainability](https://api.codeclimate.com/v1/badges/5bfde0d9a7072c48b5b8/maintainability)](https://codeclimate.com/github/nemosrc/tap/maintainability) ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/nemosrc/tap) ![GitHub](https://img.shields.io/github/license/nemosrc/tap) [![](https://jitpack.io/v/nemosrc/mox-collection.svg)](https://jitpack.io/#nemosrc/mox-collection) ![JitPack - Downloads](https://img.shields.io/jitpack/dm/github/nemosrc/tap)
+# Tap [![Build Status](https://travis-ci.org/nemosrc/tap.svg?branch=master)](https://travis-ci.org/nemosrc/tap) [![Maintainability](https://api.codeclimate.com/v1/badges/5bfde0d9a7072c48b5b8/maintainability)](https://codeclimate.com/github/nemosrc/tap/maintainability) ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/nemosrc/tap) ![GitHub](https://img.shields.io/github/license/nemosrc/tap) [![](https://jitpack.io/v/nemosrc/tap.svg)](https://jitpack.io/#nemosrc/tap) ![JitPack - Downloads](https://img.shields.io/jitpack/dm/github/nemosrc/tap)
 Sugar codes for spigot
 
 <br>
